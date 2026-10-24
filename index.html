@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EMI Locator</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f1f5f9;
+      color: #172554;
+    }
+    header {
+      background: #123b70;
+      color: white;
+      padding: 24px 16px;
+      text-align: center;
+    }
+    header h1 { margin: 0 0 8px; }
+    main {
+      max-width: 500px;
+      margin: 24px auto;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px #00000012;
+    }
+    label { display: block; margin-top: 16px; }
+    input, select, button {
+      width: 100%;
+      padding: 13px;
+      margin-top: 8px;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    input, select {
+      border: 1px solid #cbd5e1;
+      background: white;
+    }
+    button {
+      border: 0;
+      background: #16734a;
+      color: white;
+      font-weight: bold;
+      margin-top: 22px;
+    }
+    #result {
+      margin-top: 20px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+    footer { text-align: center; padding: 20px; color: #64748b; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>EMI Locator</h1>
+    <p>अपनी EMI का आसान हिसाब लगाएँ</p>
+  </header>
+  <main>
+    <div class="card">
+      <h2>EMI Calculator</h2>
+      <label for="amount">लोन की रकम (₹)</label>
+      <input id="amount" type="number" min="1" placeholder="जैसे 100000">
+      <label for="rate">सालाना ब्याज दर (%)</label>
+      <input id="rate" type="number" min="0" step="0.1" placeholder="जैसे 12">
+      <label for="months">लोन की अवधि (महीने)</label>
+      <input id="months" type="number" min="1" placeholder="जैसे 24">
+      <button onclick="calculateEMI()">मेरी EMI बताएँ</button>
+      <div id="result" aria-live="polite"></div>
+    </div>
+  </main>
+  <footer>EMI Locator © 2026</footer>
+  <script>
+    function calculateEMI() {
+      const p = Number(document.getElementById('amount').value);
+      const annualRate = Number(document.getElementById('rate').value);
+      const n = Number(document.getElementById('months').value);
+      const result = document.getElementById('result');
+
+      if (!Number.isFinite(p) || !Number.isFinite(annualRate) ||
+          !Number.isFinite(n) || p <= 0 || annualRate < 0 ||
+          n <= 0 || !Number.isInteger(n)) {
+        result.textContent = 'कृपया लोन की रकम, सही ब्याज दर और महीनों की अवधि भरें।';
+        return;
+      }
+
+      const r = annualRate / 1200;
+      const emi = r === 0 ? p / n :
+        p * r * Math.pow(1 + r, n) /
+        (Math.pow(1 + r, n) - 1);
+
+      result.innerHTML =
+        '<h3>आपकी अनुमानित EMI</h3>' +
+        '<strong>₹' + emi.toLocaleString('en-IN', {
+          maximumFractionDigits: 2
+        }) + ' प्रति महीना</strong>' +
+        '<p>कुल भुगतान: ₹' + (emi * n).toLocaleString('en-IN', {
+          maximumFractionDigits: 2
+        }) + '</p>' +
+        '<p>कुल ब्याज: ₹' + (emi * n - p).toLocaleString('en-IN', {
+          maximumFractionDigits: 2
+        }) + '</p>';
+    }
+  </script>
+</body>
+</html>
